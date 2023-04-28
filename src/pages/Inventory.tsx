@@ -8,7 +8,7 @@ export const Inventory = () => {
             Stuff goes here, Inluding verification of authentication, eventually
         </div>
 
-        <Link to={`/loadouts`}> To Previous LoadOuts</Link>
+        <Link to={`../loadouts`}> To Previous LoadOuts</Link>
     </div>
   )
 }

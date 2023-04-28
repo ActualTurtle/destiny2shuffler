@@ -8,7 +8,7 @@ import './App.css'
 
 const router = createBrowserRouter([
   {
-    path: '/',
+    path: 'destiny2shuffler/',
     element: <Root />,
     children: [
       {
@@ -24,7 +24,7 @@ const router = createBrowserRouter([
         element: <SignIn />
       },
       {
-        path: '/',
+        path: '',
         element: <Home />
       }
     ]

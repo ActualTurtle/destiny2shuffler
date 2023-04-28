@@ -10,7 +10,7 @@ export const Home = () => {
                 HELLO HOME
             </p>
 
-            <span><Link to={`/signin`} className="login-links">SignIn</Link></span>
+            <span><Link to={`./signin`} className="login-links">SignIn</Link></span>
         </div>
         
     </>
