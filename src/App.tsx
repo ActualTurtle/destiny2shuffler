@@ -3,7 +3,6 @@ import { Home } from './pages/Home'
 import { Inventory } from './pages/Inventory'
 import { LoadOuts } from './pages/LoadOuts'
 import { Root } from './pages/Root'
-import { SignIn } from './pages/SignIn'
 import './App.css'
 
 const router = createBrowserRouter([
@@ -18,10 +17,6 @@ const router = createBrowserRouter([
       {
         path: 'loadouts',
         element: <LoadOuts />
-      },
-      {
-        path: 'signin',
-        element: <SignIn />
       },
       {
         path: '',
