@@ -33,6 +33,26 @@ export const Home = () => {
     //    client_id = {{CLIENT_ID}} ///////// Found in .env file
     //    grant_type = authorization_code
     //    code = {{code}}
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
+
+    var urlencoded = new URLSearchParams();
+    urlencoded.append("client_id", "40400");
+    urlencoded.append("grant_type", "authorization_code");
+    urlencoded.append("code", code);
+
+    fetch("https://www.bungie.net/Platform/App/OAuth/Token/", {
+      method: 'POST',
+      headers: myHeaders,
+      body: urlencoded,
+      redirect: 'follow'
+    })
+      .then(response => response.json())
+      .then(result => {
+        console.log(result);
+        getCurrentUser(result.access_token);
+      })
+      .catch(error => console.log('error', error));
 
     // If the request returns a status 200
     // accessToken will be in the res body after sending the POST request
@@ -45,13 +65,27 @@ export const Home = () => {
     // Add these key-value pairs to the headers:
     //    X-API-Key = {{API_KEY}} ///////// Found in .env file
     //    Authorization = Bearer {{accessToken}} ///////// The space between Bearer and the access token is required
+    var myHeaders = new Headers();
+    myHeaders.append("X-API-Key", "b4a05fcd84cc43298ce328736d00aed9");
+    myHeaders.append("Authorization", `Bearer ${accessToken}`);
+
+    fetch("https://www.bungie.net/Platform/User/GetCurrentBungieNetUser/", {
+      method: 'GET',
+      headers: myHeaders,
+      redirect: 'follow'
+    })
+      .then(response => response.json())
+      .then(result => {
+        console.log(result);
+        navigate("/Inventory", {
+          replace: true
+        });
+      })
+      .catch(error => console.log('error', error));
 
     // If the request returns a status 200
     // The res field will have a ton of information that may or may not be useful
     // The user will be signed in for an hour (can't change that without paying money I think)
-    navigate("/Inventory", {
-      replace: true
-    });
   }
 
   return (
