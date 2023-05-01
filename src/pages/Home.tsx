@@ -57,13 +57,12 @@ export const Home = () => {
   return (
     <>
         <div>
-            <p>
-                HELLO HOME
-            </p>
+            <h1>Destiny 2 Inventory Shuffler</h1>
+            <h2>Connect your Destiny 2 account to randomize your in-game loadout!</h2>
 
             {/* I don't actually think we need the signin page after all */}
             {/* <span><Link to={`./signin`} className="login-links">SignIn</Link></span> */}
-            <span><Link to={`https://www.bungie.net/en/OAuth/Authorize?client_id=40400&response_type=code`} className="login-links">SignIn</Link></span>
+            <span><Link to={`https://www.bungie.net/en/OAuth/Authorize?client_id=40400&response_type=code`} className="login-links">Sign In With Bungie</Link></span>
         </div>
         
     </>

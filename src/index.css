@@ -19,21 +19,29 @@ a {
   color: #646cff;
   text-decoration: inherit;
 }
+
 a:hover {
   color: #535bf2;
 }
 
 body {
   margin: 0;
-  display: flex;
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  background-color: #44245c;
 }
 
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
+  /* color: #d6b9c0; */
+  color: #c697db;
+}
+
+h2 {
+  color: #aa72bc;
+  margin-top: 5%;
 }
 
 button {
@@ -47,9 +55,15 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
 }
+
+button.selected {
+  border-color: #222222;
+}
+
 button:hover {
   border-color: #646cff;
 }
+
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
@@ -60,10 +74,76 @@ button:focus-visible {
     color: #213547;
     background-color: #ffffff;
   }
+
   a:hover {
-    color: #747bff;
+      color: #ccdaeb;
   }
+
   button {
     background-color: #f9f9f9;
   }
+}
+
+.home {
+  margin: auto;
+  width: 50%;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.login-buttons {
+  padding-top: 20%;
+  display: flex;
+  align-items: center;
+}
+
+.login-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  font-size: 30px;
+  margin-top: 25%;
+  color: #747bff;
+}
+
+.page-links {
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px;
+  font-size: 12px;
+}
+
+.page-link {
+  display: flex;
+  justify-content: center;
+}
+
+.description {
+  text-align: center;
+  width: 70%;
+}
+
+.inputs {
+  width: 30%;
+}
+
+.text-inputs {
+  margin: 5%;
+}
+
+.center {
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+}
+
+.flex {
+  display: flex;
+}
+
+.column {
+  flex-direction: column;
 }
