@@ -77,7 +77,7 @@ export const Home = () => {
       .then(response => response.json())
       .then(result => {
         console.log(result);
-        navigate("/inventory", {
+        navigate("/destiny2shuffler/inventory", {
           replace: true
         });
       })
