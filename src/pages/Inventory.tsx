@@ -14,6 +14,14 @@ interface tokens {
   //scope: 0
 };
 
+interface ItemBucket {
+  bucketHash: number,
+  itemId: string,
+  itemHash: number,
+  name: string,
+  icon: string
+}
+
 
 export const Inventory = () => {
 
@@ -26,14 +34,13 @@ export const Inventory = () => {
   const [equipedItems, setEquipedItems] = useState(""); // Json String
   const [otherItems, setOtherItems] = useState(""); // Json String
 
+  const [itemBuckets, setItemBuckets] = useState<ItemBucket[]>([]);
+
 
   useEffect(() => {
     
-    if (accessToken === "")
-    {
-      
-      if (localStorage.getItem("tokens_v2"))
-      {
+    if (accessToken === ""){
+      if (localStorage.getItem("tokens_v2")){
         console.log(localStorage.getItem("tokens_v2"));
         var tokens: tokens = JSON.parse(localStorage.getItem("tokens_v2")!) as tokens;
         console.log(tokens);
@@ -41,16 +48,43 @@ export const Inventory = () => {
         setMembershipId(tokens.membershipId!);
       }
     }
+    if (accessToken !== "") {
+      if (profiles === "") {
+        GetUserProfiles();
+      }
+      if (profiles !== "") {
+        if (characterIds === "" || equipedItems === "" || otherItems === "") {
+          GetItems();
+        }
+        if (characterIds !== "" && equipedItems !== "" && otherItems !== "") {
 
-    if (accessToken !== "") 
-    {
-      GetUserProfiles();
+          // We may want to pull this out of the useeffect later, when needed
+          async function setupBuckets() {
+            var equipedBuckets: ItemBucket[] = [];
+            for (let i = 0; JSON.parse(equipedItems)[i] !== undefined; i++){
+              const icon_name = await GetIconAndName(JSON.parse(equipedItems)[i].itemHash);
+              const bucket: ItemBucket = {
+                itemId: JSON.parse(equipedItems)[i].itemInstanceId,
+                itemHash: JSON.parse(equipedItems)[i].itemHash,
+                bucketHash: JSON.parse(equipedItems)[i].bucketHash,
+                icon: icon_name != null ? icon_name.icon : "",
+                name: icon_name != null ? icon_name.name : "name_not_found",
+              }
+              equipedBuckets.push(bucket)
+            }
+            setItemBuckets(equipedBuckets);
+          }
+          setupBuckets();
+        }
+      }
     }
+    setProfileIndex(0); // Later UI should be used to select a profile
+    setCharacterIndex(0); // later UI should be used to select a character from available character, and update index
+  }, [accessToken, membershipId, profiles, equipedItems]);
 
-    setProfileIndex(0);
-    setCharacterIndex(0);
-  }, [accessToken, membershipId]);
-
+  /**
+   * Sets the profiles of the user
+   */
   function GetUserProfiles()
   {
     
@@ -71,6 +105,9 @@ export const Inventory = () => {
       .catch(error => console.log('error', error));
   }
 
+  /**
+   * Gets the characterids, equipment, and inventory items of all characters of user
+   */
   function GetItems()
   {
     
@@ -99,6 +136,37 @@ export const Inventory = () => {
       .catch(error => console.log('error', error));
   }
 
+  /**
+   * 
+   * @param itemHash 
+   * @returns a tuple with icon path and item name
+   */
+  async function GetIconAndName(itemHash: number): Promise<void | { icon: string, name: string }>
+  {
+    console.log("PRINT ITEM CALLED");
+    var myHeaders = new Headers();
+    myHeaders.append("X-API-Key", API_KEY);
+    myHeaders.append("Authorization", `Bearer ${accessToken}`);
+
+
+    return fetch(`https://www.bungie.net/Platform/Destiny2/Manifest/DestinyInventoryItemDefinition/${itemHash}/`, {
+      method: 'GET',
+      headers: myHeaders,
+      redirect: 'follow'
+    })
+      .then(response => response.json())
+      .then(result => {
+        console.log(result.Response.displayProperties.name);
+        console.log(result.Response)
+
+        return {
+          icon: result.Response.displayProperties.icon as string,
+          name: result.Response.displayProperties.name as string
+        }
+      })
+      .catch(error => console.log('error', error));
+  }
+
   return (
     <div>
         <div>
@@ -112,11 +180,17 @@ export const Inventory = () => {
               <h3 className="randomize-button">Randomize Loadout</h3>
             </button>
           </div>
-          <div className="inventory">
-            <h3>Item 1</h3>
-            <h3>Item 2</h3>
-            <h3>Item 3</h3>
-            <h3>Item 4</h3>
+          <div>
+            {
+              itemBuckets.map((item) => (
+                <div title={item.name} key={item.bucketHash}>
+
+                  <div className="itemBucket"  style={{backgroundImage: `url(${'https://www.bungie.net' + item.icon})`}}>
+                    
+                  </div>
+                </div>
+              ))
+            }
           </div>
         </div>
 
