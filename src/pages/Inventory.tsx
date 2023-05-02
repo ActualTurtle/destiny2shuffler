@@ -37,12 +37,14 @@ export const Inventory = () => {
   const [waiting, setWaiting] = useState(true);
 
   const [itemBuckets, setItemBuckets] = useState<ItemBucket[]>([]);
-  const [oKineticWeapons, setOKineticWeapons] = useState(""); // Json list String
-  const [oEnergyWeapons, setOEnergyWeapons] = useState(""); // Json list String
-  const [oPowerWeapons, setOPowerWeapons] = useState(""); // Json list String
-  const [oHelmet, setOHelmet] = useState(""); // Json list String
-  const [oGauntlets, setOGauntlets] = useState(""); // Json list String
-  const [oLegArmor, setOLegArmor] = useState(""); // Json list String
+  const [oKineticWeapons, setOKineticWeapons] = useState<ItemBucket[]>([]); // Json list String
+  const [oEnergyWeapons, setOEnergyWeapons] = useState<ItemBucket[]>([]); // Json list String
+  const [oPowerWeapons, setOPowerWeapons] = useState<ItemBucket[]>([]); // Json list String
+  const [oHelmets, setOHelmets] = useState<ItemBucket[]>([]); // Json list String
+  const [oGauntlets, setOGauntlets] = useState<ItemBucket[]>([]); // Json list String
+  const [oChestArmor, setOChestArmor] = useState<ItemBucket[]>([]); // Json list String
+  const [oLegArmor, setOLegArmor] = useState<ItemBucket[]>([]); // Json list String
+  const [oClassArmor, setOClassArmor] = useState<ItemBucket[]>([]); // Json list String
 
 
   useEffect(() => {
@@ -66,26 +68,6 @@ export const Inventory = () => {
           GetItems();
         }
         if (characterIds !== "" && equipedItems !== "" && otherItems !== "") {
-
-          // We may want to pull this out of the useeffect later, when needed
-          async function setupBuckets() {
-            var equipedBuckets: ItemBucket[] = [];
-            for (let i = 0; JSON.parse(equipedItems)[i] !== undefined; i++){
-              const bucket_info = await GetBucketInfo(JSON.parse(equipedItems)[i].bucketHash)
-              const icon_name = await GetIconAndName(JSON.parse(equipedItems)[i].itemHash);
-              const bucket: ItemBucket = {
-                itemId: JSON.parse(equipedItems)[i].itemInstanceId,
-                itemHash: JSON.parse(equipedItems)[i].itemHash,
-                bucketHash: JSON.parse(equipedItems)[i].bucketHash,
-                icon: icon_name != null ? `https://www.bungie.net${icon_name.icon}` : "",
-                bucketName: bucket_info != null ? bucket_info.name : "",
-                name: icon_name != null ? icon_name.name : "name_not_found",
-              }
-              equipedBuckets.push(bucket)
-            }
-            console.log(equipedBuckets);
-            setItemBuckets(equipedBuckets);
-          }
           setupBuckets();
         }
       }
@@ -150,7 +132,92 @@ export const Inventory = () => {
   }
 
   /**
-   * 
+   * Is responsible for organizing and initializing the data bucket with image paths ect, this should only be done once
+   */
+  async function setupBuckets() {
+
+    // For currently equiped items
+    var equipedBuckets: ItemBucket[] = [];
+    for (let i = 0; JSON.parse(equipedItems)[i] !== undefined; i++){
+      const bucket_info = await GetBucketInfo(JSON.parse(equipedItems)[i].bucketHash)
+      const icon_name = await GetIconAndName(JSON.parse(equipedItems)[i].itemHash);
+      const bucket: ItemBucket = {
+        itemId: JSON.parse(equipedItems)[i].itemInstanceId,
+        itemHash: JSON.parse(equipedItems)[i].itemHash,
+        bucketHash: JSON.parse(equipedItems)[i].bucketHash,
+        bucketName: bucket_info != null ? bucket_info.name : "",
+        icon: icon_name != null ? `https://www.bungie.net${icon_name.icon}` : "",
+        name: icon_name != null ? icon_name.name : "name_not_found",
+      }
+      equipedBuckets.push(bucket)
+    }
+    console.log(equipedBuckets);
+    setItemBuckets(equipedBuckets);
+
+    // For other equipable items
+    var kineticWeapons: ItemBucket[] = [];
+    var energyWeapons: ItemBucket[] = [];
+    var powerWeapons: ItemBucket[] = [];
+    var helmets: ItemBucket[] = [];
+    var gauntlets: ItemBucket[] = [];
+    var chestArmor: ItemBucket[] = [];
+    var legArmor: ItemBucket[] = [];
+    var classArmor: ItemBucket[] = [];
+
+    const oItems = JSON.parse(otherItems);
+    for (let i = 0; oItems[i] !== undefined; i++){
+
+      var bucketHash = oItems[i].bucketHash;
+      if (bucketHash === undefined) continue;
+
+      const bucket_info = await GetBucketInfo(bucketHash);
+
+      var bucketName : string = bucket_info != null ? bucket_info.name : "";
+      var targetArray: ItemBucket[] | undefined = undefined;
+
+      if (bucketName === 'Kinetic Weapons') targetArray = kineticWeapons;
+      else if (bucketName === 'Energy Weapons') targetArray = energyWeapons;
+      else if (bucketName === 'Power Weapons') targetArray = powerWeapons;
+      else if (bucketName === 'Helmet') targetArray = helmets;
+      else if (bucketName === 'Gauntlets') targetArray = gauntlets;
+      else if (bucketName === 'Chest Armor') targetArray = chestArmor;
+      else if (bucketName === 'Leg Armor') targetArray = legArmor;
+      else if (bucketName === 'Class Armor') targetArray = classArmor;
+      
+      if (targetArray === undefined) continue;
+
+      const icon_name = await GetIconAndName(oItems[i].itemHash);
+
+      const bucket: ItemBucket = {
+        itemId: oItems[i].itemInstanceId,
+        itemHash: oItems[i].itemHash,
+        bucketHash: oItems[i].bucketHash,
+        bucketName: bucket_info != null ? bucket_info.name : "",
+        icon: icon_name != null ? `https://www.bungie.net${icon_name.icon}` : "",
+        name: icon_name != null ? icon_name.name : "name_not_found",
+      }
+      targetArray.push(bucket)
+    }
+    setOKineticWeapons(kineticWeapons);
+    setOEnergyWeapons(energyWeapons);
+    setOPowerWeapons(powerWeapons);
+    setOHelmets(helmets);
+    setOGauntlets(gauntlets);
+    setOChestArmor(chestArmor);
+    setOLegArmor(legArmor);
+    setOClassArmor(classArmor);
+    console.log(kineticWeapons);
+    console.log(energyWeapons);
+    console.log(powerWeapons);
+    console.log(helmets);
+    console.log(gauntlets);
+    console.log(chestArmor);
+    console.log(legArmor);
+    console.log(classArmor);
+  }
+
+  /**
+   * Responsible for getting key item display data
    * @param itemHash 
    * @returns a tuple with icon path and item name
    */
