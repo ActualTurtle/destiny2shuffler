@@ -40,8 +40,8 @@ h1 {
 }
 
 h3 {
-  color: #aa72bc;
-  margin-top: 5%;
+  color: #d38deb;
+  margin: 5%;
 }
 
 button {
@@ -61,7 +61,7 @@ button.selected {
 }
 
 button:hover {
-  border-color: #646cff;
+  border-color: #ccdaeb;
 }
 
 button:focus,
@@ -76,11 +76,11 @@ button:focus-visible {
   }
 
   a:hover {
-      color: #ccdaeb;
+    color: #ccdaeb;
   }
 
   button {
-    background-color: #f9f9f9;
+    background-color: #612665;
   }
 }
 
@@ -148,16 +148,45 @@ button:focus-visible {
   flex-direction: column;
 }
 
-.randomize-button {
-  padding-right: 10%;
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
 .inventory {
   padding-left: 15%;
 }
 
 .inventory-full {
-  padding-top: 15%;
-  padding-bottom: 15%;
+  padding-top: 5%;
+  /* padding-bottom: 15%; */
+}
+
+.images {
+  width: 128px;
+  height: 128px;
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 20%;
+  padding-bottom: 35px;
+}
+
+.all-items {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.nav-link {
+  display: flex;
+  justify-content: flex-end;
+  font-size: larger;
+}
+
+.outline {
+  border-color: #aa72bc;
+  border-style: solid;
+  border-radius: 10px;
+  border-width: 3px;
+  padding: 3px;
+  color: #747bff;
 }
