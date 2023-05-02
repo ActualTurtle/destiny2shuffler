@@ -1,6 +1,31 @@
 import { Link } from "react-router-dom"
 import { useEffect } from "react"
 import { useNavigate } from "react-router-dom";
+
+
+import process from "process";
+
+const development: boolean = !process.env.NODE_ENV || process.env.NODE_ENV === 'development';
+const client_id: number = !isDev() ? 40400 : 44186;
+const API_KEY: string = !isDev() ? "b4a05fcd84cc43298ce328736d00aed9" : "48d3fd8339b1411589414a981bc3cb2c";
+
+export default function isDev(): boolean
+{
+    return development;
+}
+
+
+interface tokens {
+  tokenType: string,
+  accessToken: string | null,
+  //accessTokenReadyDate: 0,
+  accessTokenExpiryDate: number,
+  refreshToken: string | null,
+  //refreshTokenReadyDate: 0,
+  refreshTokenExpiryDate: number,
+  membershipId: number,
+  //scope: 0
+};
 /**
  * TODO: Testing this is hard since after clicking on "SignIn" you will be redirected to the 
  * github page and not the localhost page meaning you need to copy the code at the end of the 
@@ -37,9 +62,10 @@ export const Home = () => {
     myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
 
     var urlencoded = new URLSearchParams();
-    urlencoded.append("client_id", "40400");
+    urlencoded.append("client_id", client_id.toString());
     urlencoded.append("grant_type", "authorization_code");
     urlencoded.append("code", code);
+
 
     fetch("https://www.bungie.net/Platform/App/OAuth/Token/", {
       method: 'POST',
@@ -48,9 +74,37 @@ export const Home = () => {
       redirect: 'follow'
     })
       .then(response => response.json())
-      .then(result => {
-        console.log(result);
-        getCurrentUser(result.access_token);
+      .then(data => {
+        console.log(data);
+        
+        var tokens : tokens = {
+          tokenType: 'Bearer',
+          accessToken: null,
+          accessTokenExpiryDate: 0,
+          refreshToken: null,
+          refreshTokenExpiryDate: 0,
+          membershipId: 0,
+        };
+
+        if (data.access_token) {
+          var time = new Date().getTime();
+          tokens.tokenType = data.token_type;
+          tokens.accessToken = data.access_token;
+          tokens.accessTokenExpiryDate = time+data.expires_in*1000;
+          if (data.refresh_token) {
+            tokens.refreshToken = data.refresh_token;
+            tokens.refreshTokenExpiryDate = time + data.refresh_expires_in * 1000;
+          } else {
+            tokens.refreshToken = null;
+            tokens.refreshTokenExpiryDate = 0;
+          }
+          tokens.membershipId = data.membershipId;
+  
+          localStorage.setItem('tokens_v2', JSON.stringify(tokens));
+
+
+          getCurrentUser(data.access_token);
+        }
       })
       .catch(error => console.log('error', error));
 
@@ -66,7 +120,7 @@ export const Home = () => {
     //    X-API-Key = {{API_KEY}} ///////// Found in .env file
     //    Authorization = Bearer {{accessToken}} ///////// The space between Bearer and the access token is required
     var myHeaders = new Headers();
-    myHeaders.append("X-API-Key", "b4a05fcd84cc43298ce328736d00aed9");
+    myHeaders.append("X-API-Key", API_KEY);
     myHeaders.append("Authorization", `Bearer ${accessToken}`);
 
     fetch("https://www.bungie.net/Platform/User/GetCurrentBungieNetUser/", {
@@ -96,7 +150,7 @@ export const Home = () => {
 
             {/* I don't actually think we need the signin page after all */}
             {/* <span><Link to={`./signin`} className="login-links">SignIn</Link></span> */}
-            <span><Link to={`https://www.bungie.net/en/OAuth/Authorize?client_id=40400&response_type=code`} className="login-links">Sign In With Bungie</Link></span>
+            <span><Link to={`https://www.bungie.net/en/OAuth/Authorize?client_id=${client_id}&response_type=code`} className="login-links">Sign In With Bungie</Link></span>
         </div>
         
     </>
