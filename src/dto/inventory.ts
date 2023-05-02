@@ -13,8 +13,18 @@ export interface InventoryItem {
   bindStatus: Number,
   location: Number,
   bucketHash: Number,
+  bucketName: string,
   lockable: Boolean,
   state: Number,
   expirationDate: Date,
   isWrapper: Boolean,
+}
+
+export interface ItemBucket {
+  bucketHash: number,
+  bucketName: string,
+  itemId: string,
+  itemHash: number,
+  name: string,
+  icon: string
 }
