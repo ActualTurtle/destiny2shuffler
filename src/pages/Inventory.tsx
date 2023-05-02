@@ -16,6 +16,7 @@ interface tokens {
 
 interface ItemBucket {
   bucketHash: number,
+  bucketName: string,
   itemId: string,
   itemHash: number,
   name: string,
@@ -35,6 +36,12 @@ export const Inventory = () => {
   const [otherItems, setOtherItems] = useState(""); // Json String
 
   const [itemBuckets, setItemBuckets] = useState<ItemBucket[]>([]);
+  const [oKineticWeapons, setOKineticWeapons] = useState(""); // Json list String
+  const [oEnergyWeapons, setOEnergyWeapons] = useState(""); // Json list String
+  const [oPowerWeapons, setOPowerWeapons] = useState(""); // Json list String
+  const [oHelmet, setOHelmet] = useState(""); // Json list String
+  const [oGauntlets, setOGauntlets] = useState(""); // Json list String
+  const [oLegArmor, setOLegArmor] = useState(""); // Json list String
 
 
   useEffect(() => {
@@ -62,16 +69,19 @@ export const Inventory = () => {
           async function setupBuckets() {
             var equipedBuckets: ItemBucket[] = [];
             for (let i = 0; JSON.parse(equipedItems)[i] !== undefined; i++){
+              const bucket_info = await GetBucketInfo(JSON.parse(equipedItems)[i].bucketHash)
               const icon_name = await GetIconAndName(JSON.parse(equipedItems)[i].itemHash);
               const bucket: ItemBucket = {
                 itemId: JSON.parse(equipedItems)[i].itemInstanceId,
                 itemHash: JSON.parse(equipedItems)[i].itemHash,
                 bucketHash: JSON.parse(equipedItems)[i].bucketHash,
+                bucketName: bucket_info != null ? bucket_info.name : "",
                 icon: icon_name != null ? icon_name.icon : "",
                 name: icon_name != null ? icon_name.name : "name_not_found",
               }
               equipedBuckets.push(bucket)
             }
+            console.log(equipedBuckets);
             setItemBuckets(equipedBuckets);
           }
           setupBuckets();
@@ -99,7 +109,7 @@ export const Inventory = () => {
     })
       .then(response => response.json())
       .then(result => {
-        console.log(result);
+        // console.log(result);
         setProfiles(JSON.stringify(result.Response.profiles))
       })
       .catch(error => console.log('error', error));
@@ -125,11 +135,11 @@ export const Inventory = () => {
     })
       .then(response => response.json())
       .then(result => {
-        console.log(result);
+        // console.log(result);
         var charIds = result.Response.profile.data.characterIds as Array<string>;
         setCharacterIds(JSON.stringify(charIds));
         
-        console.log(result.Response.characterEquipment.data[charIds[characterIndex]])
+        // console.log(result.Response.characterEquipment.data[charIds[characterIndex]])
         setEquipedItems(JSON.stringify(result.Response.characterEquipment.data[charIds[characterIndex]].items))
         setOtherItems(JSON.stringify(result.Response.characterInventories.data[charIds[characterIndex]].items))
       })
@@ -143,7 +153,6 @@ export const Inventory = () => {
    */
   async function GetIconAndName(itemHash: number): Promise<void | { icon: string, name: string }>
   {
-    console.log("PRINT ITEM CALLED");
     var myHeaders = new Headers();
     myHeaders.append("X-API-Key", API_KEY);
     myHeaders.append("Authorization", `Bearer ${accessToken}`);
@@ -156,12 +165,36 @@ export const Inventory = () => {
     })
       .then(response => response.json())
       .then(result => {
-        console.log(result.Response.displayProperties.name);
-        console.log(result.Response)
+        // console.log(result.Response.displayProperties.name);
+        // console.log(result.Response)
 
         return {
           icon: result.Response.displayProperties.icon as string,
           name: result.Response.displayProperties.name as string
+        }
+      })
+      .catch(error => console.log('error', error));
+  }
+
+  async function GetBucketInfo(itemHash: number): Promise<void | {name: string}>
+  {
+    var myHeaders = new Headers();
+    myHeaders.append("X-API-Key", API_KEY);
+    myHeaders.append("Authorization", `Bearer ${accessToken}`);
+
+
+    return fetch(`https://www.bungie.net/Platform/Destiny2/Manifest/DestinyInventoryBucketDefinition/${itemHash}/`, {
+      method: 'GET',
+      headers: myHeaders,
+      redirect: 'follow'
+    })
+      .then(response => response.json())
+      .then(result => {
+        // console.log(result.Response.displayProperties.name);
+        // console.log(result.Response)
+
+        return {
+          name: result.Response.displayProperties.name
         }
       })
       .catch(error => console.log('error', error));
