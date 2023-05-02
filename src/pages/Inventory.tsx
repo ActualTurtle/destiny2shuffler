@@ -33,11 +33,13 @@ export const Inventory = () => {
   const [characterIndex, setCharacterIndex] = useState(0);
   const [equipedItems, setEquipedItems] = useState(""); // Json String
   const [otherItems, setOtherItems] = useState(""); // Json String
+  const [waiting, setWaiting] = useState(true);
 
   const [itemBuckets, setItemBuckets] = useState<ItemBucket[]>([]);
 
 
   useEffect(() => {
+    setWaiting(true);
     
     if (accessToken === ""){
       if (localStorage.getItem("tokens_v2")){
@@ -67,7 +69,7 @@ export const Inventory = () => {
                 itemId: JSON.parse(equipedItems)[i].itemInstanceId,
                 itemHash: JSON.parse(equipedItems)[i].itemHash,
                 bucketHash: JSON.parse(equipedItems)[i].bucketHash,
-                icon: icon_name != null ? icon_name.icon : "",
+                icon: icon_name != null ? `https://www.bungie.net${icon_name.icon}` : "",
                 name: icon_name != null ? icon_name.name : "name_not_found",
               }
               equipedBuckets.push(bucket)
@@ -80,6 +82,7 @@ export const Inventory = () => {
     }
     setProfileIndex(0); // Later UI should be used to select a profile
     setCharacterIndex(0); // later UI should be used to select a character from available character, and update index
+    setWaiting(false);
   }, [accessToken, membershipId, profiles, equipedItems]);
 
   /**
@@ -169,32 +172,34 @@ export const Inventory = () => {
 
   return (
     <div>
-        <div>
-            Stuff goes here, Inluding verification of authentication, eventually
-        </div>
+        <span className="nav-link"><Link to={`../loadouts`} className="outline"> To Previous Loadouts</Link></span>
 
-        <div className="flex center inventory-full">
-          <div>
-            <button onClick={() => GetItems()}>
-
-              <h3 className="randomize-button">Randomize Loadout</h3>
-            </button>
-          </div>
-          <div>
-            {
-              itemBuckets.map((item) => (
-                <div title={item.name} key={item.bucketHash}>
-
-                  <div className="itemBucket"  style={{backgroundImage: `url(${'https://www.bungie.net' + item.icon})`}}>
-                    
-                  </div>
+        {
+          waiting ? (
+            <div className="flex center inventory-full">Please Wait</div>
+          ) : (
+            <>
+              <div className="flex center inventory-full">
+                <div className="all-items center">
+                  {
+                    itemBuckets.map((item) => (
+                      <div title={item.name} key={item.bucketHash} className="item">
+                        <img src={ item.icon } alt={ item.icon } className="images" />
+                        {item.name}
+                      </div>
+                    ))
+                  }
                 </div>
-              ))
-            }
-          </div>
-        </div>
+              </div>
 
-        <span><Link to={`../loadouts`}> To Previous LoadOuts</Link></span>
+              <div className="center">
+                <button onClick={() => GetItems()} className="center outline">
+                  <h3 className="center randomize-button">Randomize Loadout</h3>
+                </button>
+              </div>
+            </>
+          )
+        }
     </div>
   )
 }
