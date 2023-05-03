@@ -36,19 +36,29 @@ export const Inventory = () => {
   const [otherItems, setOtherItems] = useState(""); // Json String
   const [waiting, setWaiting] = useState(true);
 
-  const [itemBuckets, setItemBuckets] = useState<ItemBucket[]>([]);
-  const [oKineticWeapons, setOKineticWeapons] = useState<ItemBucket[]>([]); // Json list String
-  const [oEnergyWeapons, setOEnergyWeapons] = useState<ItemBucket[]>([]); // Json list String
-  const [oPowerWeapons, setOPowerWeapons] = useState<ItemBucket[]>([]); // Json list String
-  const [oHelmets, setOHelmets] = useState<ItemBucket[]>([]); // Json list String
-  const [oGauntlets, setOGauntlets] = useState<ItemBucket[]>([]); // Json list String
-  const [oChestArmor, setOChestArmor] = useState<ItemBucket[]>([]); // Json list String
-  const [oLegArmor, setOLegArmor] = useState<ItemBucket[]>([]); // Json list String
-  const [oClassArmor, setOClassArmor] = useState<ItemBucket[]>([]); // Json list String
+  const [eKineticWeapon, setEKineticWeapon] = useState<ItemBucket>();
+  const [eEnergyWeapon, setEEnergyWeapon] = useState<ItemBucket>();
+  const [ePowerWeapon, setEPowerWeapon] = useState<ItemBucket>();
+  const [eHelmet, setEHelmet] = useState<ItemBucket>();
+  const [eGauntlets, setEGauntlets] = useState<ItemBucket>();
+  const [eChestArmor, setEChestArmor] = useState<ItemBucket>();
+  const [eLegArmor, setELegArmor] = useState<ItemBucket>();
+  const [eClassArmor, setEClassArmor] = useState<ItemBucket>();
+
+  const [e_All, setE_All] = useState<ItemBucket[]>([]); 
+
+  const [oKineticWeapons, setOKineticWeapons] = useState<ItemBucket[]>([]); 
+  const [oEnergyWeapons, setOEnergyWeapons] = useState<ItemBucket[]>([]); 
+  const [oPowerWeapons, setOPowerWeapons] = useState<ItemBucket[]>([]); 
+  const [oHelmets, setOHelmets] = useState<ItemBucket[]>([]); 
+  const [oGauntlets, setOGauntlets] = useState<ItemBucket[]>([]); 
+  const [oChestArmor, setOChestArmor] = useState<ItemBucket[]>([]); 
+  const [oLegArmor, setOLegArmor] = useState<ItemBucket[]>([]); 
+  const [oClassArmor, setOClassArmor] = useState<ItemBucket[]>([]); 
 
 
   useEffect(() => {
-    setWaiting(true);
+    
     
     if (accessToken === ""){
       if (localStorage.getItem("tokens_v2")){
@@ -68,14 +78,13 @@ export const Inventory = () => {
           GetItems();
         }
         if (characterIds !== "" && equipedItems !== "" && otherItems !== "" &&
-            itemBuckets.length === 0) {
+            eKineticWeapon === undefined) {
           setupBuckets();
         }
       }
     }
     setProfileIndex(0); // Later UI should be used to select a profile
     setCharacterIndex(0); // later UI should be used to select a character from available character, and update index
-    setWaiting(false);
   }, [accessToken, membershipId, profiles, equipedItems]);
 
   /**
@@ -136,11 +145,12 @@ export const Inventory = () => {
    * Is responsible for organizing and initializing the data bucket with image paths ect, this should only be done once
    */
   async function setupBuckets() {
-
+    setWaiting(true);
     // For currently equiped items
-    var equipedBuckets: ItemBucket[] = [];
+    var equippedBuckets: ItemBucket[] = []
     for (let i = 0; JSON.parse(equipedItems)[i] !== undefined; i++){
       const bucket_info = await GetBucketInfo(JSON.parse(equipedItems)[i].bucketHash)
+      var bucketName = bucket_info != null ? bucket_info.name : "";
       const icon_name = await GetIconAndName(JSON.parse(equipedItems)[i].itemHash);
       const bucket: ItemBucket = {
         itemId: JSON.parse(equipedItems)[i].itemInstanceId,
@@ -150,10 +160,19 @@ export const Inventory = () => {
         icon: icon_name != null ? `https://www.bungie.net${icon_name.icon}` : "",
         name: icon_name != null ? icon_name.name : "name_not_found",
       }
-      equipedBuckets.push(bucket)
+      if (bucketName === 'Kinetic Weapons') setEKineticWeapon(bucket);
+      else if (bucketName === 'Energy Weapons') setEEnergyWeapon(bucket);
+      else if (bucketName === 'Power Weapons') setEPowerWeapon(bucket);
+      else if (bucketName === 'Helmet') setEHelmet(bucket);
+      else if (bucketName === 'Gauntlets') setEGauntlets(bucket);
+      else if (bucketName === 'Chest Armor') setEChestArmor(bucket);
+      else if (bucketName === 'Leg Armor') setELegArmor(bucket);
+      else if (bucketName === 'Class Armor') setEClassArmor(bucket);
+      else continue;
+
+      equippedBuckets.push(bucket);
     }
-    console.log(equipedBuckets);
-    setItemBuckets(equipedBuckets);
+    setE_All(equippedBuckets);
 
     // For other equipable items
     var kineticWeapons: ItemBucket[] = [];
@@ -215,6 +234,7 @@ export const Inventory = () => {
     console.log(chestArmor);
     console.log(legArmor);
     console.log(classArmor);
+    setWaiting(false);
   }
 
   /**
@@ -277,14 +297,55 @@ export const Inventory = () => {
   function doShuffle()
   {
     const itemsToEquip: ItemBucket[]  = [];
-    itemsToEquip.push( oKineticWeapons[Math.floor(Math.random()*oKineticWeapons.length)]);
-    itemsToEquip.push( oEnergyWeapons[Math.floor(Math.random()*oEnergyWeapons.length)]);
-    itemsToEquip.push( oPowerWeapons[Math.floor(Math.random()*oPowerWeapons.length)]);
-    itemsToEquip.push( oHelmets[Math.floor(Math.random()*oHelmets.length)]);
-    itemsToEquip.push( oGauntlets[Math.floor(Math.random()*oGauntlets.length)]);
-    itemsToEquip.push( oChestArmor[Math.floor(Math.random()*oChestArmor.length)]);
-    itemsToEquip.push( oLegArmor[Math.floor(Math.random()*oLegArmor.length)]);
-    itemsToEquip.push( oClassArmor[Math.floor(Math.random()*oClassArmor.length)]);
+    if (oKineticWeapons.length > 0){
+      oKineticWeapons.push(eKineticWeapon!);
+      itemsToEquip.push( shuffle(oKineticWeapons).pop()!);
+      setEKineticWeapon(itemsToEquip[itemsToEquip.length-1]);
+      setOKineticWeapons(oKineticWeapons);
+    } 
+    if (oEnergyWeapons.length > 0){
+      oEnergyWeapons.push(eEnergyWeapon!);
+      itemsToEquip.push( shuffle(oEnergyWeapons).pop()!);
+      setEEnergyWeapon(itemsToEquip[itemsToEquip.length-1]);
+      setOEnergyWeapons(oEnergyWeapons);
+    } 
+    if (oPowerWeapons.length > 0){
+      oPowerWeapons.push(ePowerWeapon!);
+      itemsToEquip.push( shuffle(oPowerWeapons).pop()!);
+      setEPowerWeapon(itemsToEquip[itemsToEquip.length-1]);
+      setOPowerWeapons(oPowerWeapons);
+    } 
+    if (oHelmets.length > 0){
+      oHelmets.push(eHelmet!);
+      itemsToEquip.push( shuffle(oHelmets).pop()!);
+      setEHelmet(itemsToEquip[itemsToEquip.length-1]);
+      setOHelmets(oHelmets);
+    } 
+    if (oGauntlets.length > 0){
+      oGauntlets.push(eGauntlets!);
+      itemsToEquip.push( shuffle(oGauntlets).pop()!);
+      setEGauntlets(itemsToEquip[itemsToEquip.length-1]);
+      setOGauntlets(oGauntlets);      
+    } 
+    if (oChestArmor.length > 0){
+      oChestArmor.push(eChestArmor!);
+      itemsToEquip.push( shuffle(oChestArmor).pop()!);
+      setEChestArmor(itemsToEquip[itemsToEquip.length-1]);
+      setOChestArmor(oChestArmor);      
+    } 
+    if (oLegArmor.length > 0){
+      oLegArmor.push(eLegArmor!);
+      itemsToEquip.push( shuffle(oLegArmor).pop()!);
+      setELegArmor(itemsToEquip[itemsToEquip.length-1]);
+      setOLegArmor(oLegArmor);      
+    } 
+    if (oClassArmor.length > 0){
+      oClassArmor.push(eClassArmor!);
+      itemsToEquip.push( shuffle(oClassArmor).pop()!);
+      setEClassArmor(itemsToEquip[itemsToEquip.length-1]);
+      setOClassArmor(oClassArmor);      
+    } 
+    setE_All(itemsToEquip);
 
     const items_ids = itemsToEquip.map((item) => item.itemId);
     console.log(items_ids);
@@ -312,6 +373,27 @@ export const Inventory = () => {
       .catch(error => console.log('error', error));
   }
 
+  //JUST SHUFFLES AN ARRAY src: https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
+  function shuffle(array: ItemBucket[]): ItemBucket[] {
+    if (array === undefined) return [];
+    let currentIndex = array.length,  randomIndex;
+  
+    // While there remain elements to shuffle.
+    while (currentIndex != 0) {
+  
+      // Pick a remaining element.
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex--;
+  
+      // And swap it with the current element.
+      [array[currentIndex], array[randomIndex]] = [
+        array[randomIndex], array[currentIndex]];
+    }
+  
+    return array;
+  }
+  
+
   return (
     <div>
         <span className="nav-link"><Link to={`../loadouts`} className="outline"> To Previous Loadouts</Link></span>
@@ -324,7 +406,7 @@ export const Inventory = () => {
               <div className="flex center inventory-full">
                 <div className="all-items center">
                   {
-                    itemBuckets.map((item) => (
+                    e_All.map((item) => (
                       <div title={item.name} key={item.bucketHash} className="item">
                         <img src={ item.icon } alt={ item.icon } className="images" />
                         {item.name}
