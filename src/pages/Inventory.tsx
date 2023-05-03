@@ -190,22 +190,18 @@ export const Inventory = () => {
       var bucketHash = oItems[i].bucketHash;
       if (bucketHash === undefined) continue;
 
-      const bucket_info = await GetBucketInfo(bucketHash);
-
-      var bucketName : string = bucket_info != null ? bucket_info.name : "";
       var targetArray: ItemBucket[] | undefined = undefined;
-
-      if (bucketName === 'Kinetic Weapons') targetArray = kineticWeapons;
-      else if (bucketName === 'Energy Weapons') targetArray = energyWeapons;
-      else if (bucketName === 'Power Weapons') targetArray = powerWeapons;
-      else if (bucketName === 'Helmet') targetArray = helmets;
-      else if (bucketName === 'Gauntlets') targetArray = gauntlets;
-      else if (bucketName === 'Chest Armor') targetArray = chestArmor;
-      else if (bucketName === 'Leg Armor') targetArray = legArmor;
-      else if (bucketName === 'Class Armor') targetArray = classArmor;
-      
+      if (bucketHash === 1498876634) targetArray = kineticWeapons;
+      else if (bucketHash === 2465295065) targetArray = energyWeapons;
+      else if (bucketHash === 953998645) targetArray = powerWeapons;
+      else if (bucketHash === 3448274439) targetArray = helmets;
+      else if (bucketHash === 3551918588) targetArray = gauntlets;
+      else if (bucketHash === 14239492) targetArray = chestArmor;
+      else if (bucketHash === 20886954) targetArray = legArmor;
+      else if (bucketHash === 1585787867) targetArray = classArmor;
       if (targetArray === undefined) continue;
 
+      const bucket_info = await GetBucketInfo(bucketHash);
       const icon_name = await GetIconAndName(oItems[i].itemHash);
 
       const bucket: ItemBucket = {
