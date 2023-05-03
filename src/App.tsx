@@ -15,7 +15,7 @@ const router = createBrowserRouter([
         element: <Inventory />
       },
       {
-        path: 'loadouts',
+        path: 'loadouts/character/:characterId/membershipType/:membershipType',
         element: <LoadOuts />
       },
       {

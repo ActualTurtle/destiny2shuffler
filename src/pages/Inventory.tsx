@@ -1,6 +1,11 @@
 import { Link } from "react-router-dom"
 import { useEffect, useState } from "react";
 import { API_KEY } from "../lib/api";
+import { profile } from "console";
+import { Loadout } from "../dto/firestore";
+
+import { doc, setDoc } from "firebase/firestore";
+import { saveLoadout } from "../lib/loadouts";
 
 interface tokens {
   tokenType: string,
@@ -26,7 +31,7 @@ interface ItemBucket {
 
 export const Inventory = () => {
 
-  const [accessToken, setAuth_token] = useState("");
+  const [accessToken, setAuthToken] = useState("");
   const [membershipId, setMembershipId] = useState(0);
   const [profiles, setProfiles] = useState(""); // Json String
   const [profileIndex, setProfileIndex] = useState(0);
@@ -65,7 +70,7 @@ export const Inventory = () => {
         console.log(localStorage.getItem("tokens_v2"));
         var tokens: tokens = JSON.parse(localStorage.getItem("tokens_v2")!) as tokens;
         console.log(tokens);
-        setAuth_token(tokens.accessToken!);
+        setAuthToken(tokens.accessToken!);
         setMembershipId(tokens.membershipId!);
       }
     }
@@ -354,8 +359,20 @@ export const Inventory = () => {
     
     setE_All(itemsToEquip);
 
+    
+
     const items_ids = itemsToEquip.map((item) => item.itemId);
     console.log(items_ids);
+
+    //save items in firebase
+
+
+    saveLoadout(
+      items_ids, 
+      JSON.parse(characterIds)[characterIndex],
+      JSON.parse(profiles)[profileIndex].membershipType
+    );
+
     var myHeaders = new Headers();
     myHeaders.append("X-API-Key", API_KEY);
     myHeaders.append("Authorization", `Bearer ${accessToken}`);
@@ -403,7 +420,7 @@ export const Inventory = () => {
 
   return (
     <div>
-        <span className="nav-link"><Link to={`../loadouts`} className="outline"> To Previous Loadouts</Link></span>
+        <span className="nav-link"><Link to={`../loadouts/character/${JSON.parse(characterIds)[characterIndex]}/membershipType/${JSON.parse(profiles)[profileIndex].membershipType}`} className="outline"> To Previous Loadouts</Link></span>
 
         {
           waiting ? (
