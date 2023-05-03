@@ -1,30 +1,15 @@
 import { Link } from "react-router-dom"
 import { useEffect } from "react"
 import { useNavigate } from "react-router-dom";
-
-
-import process from "process";
-
-const development: boolean = !process.env.NODE_ENV || process.env.NODE_ENV === 'development';
-const client_id: number = !isDev() ? 40400 : 44186;
-const API_KEY: string = !isDev() ? "b4a05fcd84cc43298ce328736d00aed9" : "48d3fd8339b1411589414a981bc3cb2c";
-
-export default function isDev(): boolean
-{
-    return development;
-}
-
+import { client_id } from "../lib/api";
 
 interface tokens {
   tokenType: string,
   accessToken: string | null,
-  //accessTokenReadyDate: 0,
   accessTokenExpiryDate: number,
   refreshToken: string | null,
-  //refreshTokenReadyDate: 0,
   refreshTokenExpiryDate: number,
   membershipId: number,
-  //scope: 0
 };
 /**
  * TODO: Testing this is hard since after clicking on "SignIn" you will be redirected to the 
@@ -98,12 +83,15 @@ export const Home = () => {
             tokens.refreshToken = null;
             tokens.refreshTokenExpiryDate = 0;
           }
-          tokens.membershipId = data.membershipId;
+          tokens.membershipId = data.membership_id;
   
           localStorage.setItem('tokens_v2', JSON.stringify(tokens));
+        
+          console.log(JSON.stringify(tokens));
 
-
-          getCurrentUser(data.access_token);
+          navigate("/destiny2shuffler/inventory", {
+            replace: true
+          });
         }
       })
       .catch(error => console.log('error', error));
@@ -114,33 +102,6 @@ export const Home = () => {
     // getCurrentUser(accessToken);
   }
 
-  function getCurrentUser(accessToken: string) {
-    // Send GET request to https://www.bungie.net/Platform/User/GetCurrentBungieNetUser/
-    // Add these key-value pairs to the headers:
-    //    X-API-Key = {{API_KEY}} ///////// Found in .env file
-    //    Authorization = Bearer {{accessToken}} ///////// The space between Bearer and the access token is required
-    var myHeaders = new Headers();
-    myHeaders.append("X-API-Key", API_KEY);
-    myHeaders.append("Authorization", `Bearer ${accessToken}`);
-
-    fetch("https://www.bungie.net/Platform/User/GetCurrentBungieNetUser/", {
-      method: 'GET',
-      headers: myHeaders,
-      redirect: 'follow'
-    })
-      .then(response => response.json())
-      .then(result => {
-        console.log(result);
-        navigate("/destiny2shuffler/inventory", {
-          replace: true
-        });
-      })
-      .catch(error => console.log('error', error));
-
-    // If the request returns a status 200
-    // The res field will have a ton of information that may or may not be useful
-    // The user will be signed in for an hour (can't change that without paying money I think)
-  }
 
   return (
     <>
