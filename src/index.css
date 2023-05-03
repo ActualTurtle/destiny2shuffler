@@ -171,6 +171,15 @@ button:focus-visible {
   padding-bottom: 35px;
 }
 
+.weapons {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 33%;
+  padding-bottom: 35px;
+}
+
 .all-items {
   display: flex;
   flex-wrap: wrap;
@@ -189,4 +198,5 @@ button:focus-visible {
   border-width: 3px;
   padding: 3px;
   color: #747bff;
+  background-color: #612665;
 }
