@@ -420,7 +420,7 @@ export const Inventory = () => {
 
   return (
     <div>
-        <span className="nav-link"><Link to={`../loadouts/character/${JSON.parse(characterIds)[characterIndex]}/membershipType/${JSON.parse(profiles)[profileIndex].membershipType}`} className="outline"> To Previous Loadouts</Link></span>
+        <span className="nav-link"><Link to={`../loadouts/character/${!!characterIds ? JSON.parse(characterIds)[characterIndex] : 0}/membershipType/${!!profiles ? JSON.parse(profiles)[profileIndex].membershipType : "unknown"}`} className="outline"> To Previous Loadouts</Link></span>
 
         {
           waiting ? (
