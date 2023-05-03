@@ -20,9 +20,9 @@ interface ItemBucket {
   itemId: string,
   itemHash: number,
   name: string,
-  icon: string
+  icon: string,
+  isWeapon: boolean
 }
-
 
 export const Inventory = () => {
 
@@ -54,12 +54,11 @@ export const Inventory = () => {
   const [oGauntlets, setOGauntlets] = useState<ItemBucket[]>([]); 
   const [oChestArmor, setOChestArmor] = useState<ItemBucket[]>([]); 
   const [oLegArmor, setOLegArmor] = useState<ItemBucket[]>([]); 
-  const [oClassArmor, setOClassArmor] = useState<ItemBucket[]>([]); 
+  const [oClassArmor, setOClassArmor] = useState<ItemBucket[]>([]);
 
+  const weaponNames = ['Kinetic Weapons', 'Energy Weapons', 'Power Weapons']; // To check if an item is a weapon
 
-  useEffect(() => {
-    
-    
+  useEffect(() => {    
     if (accessToken === ""){
       if (localStorage.getItem("tokens_v2")){
         console.log(localStorage.getItem("tokens_v2"));
@@ -92,7 +91,6 @@ export const Inventory = () => {
    */
   function GetUserProfiles()
   {
-    
     var myHeaders = new Headers();
     myHeaders.append("X-API-Key", API_KEY);
     myHeaders.append("Authorization", `Bearer ${accessToken}`);
@@ -115,7 +113,6 @@ export const Inventory = () => {
    */
   function GetItems()
   {
-    
     var myHeaders = new Headers();
     myHeaders.append("X-API-Key", API_KEY);
     myHeaders.append("Authorization", `Bearer ${accessToken}`);
@@ -156,9 +153,10 @@ export const Inventory = () => {
         itemId: JSON.parse(equipedItems)[i].itemInstanceId,
         itemHash: JSON.parse(equipedItems)[i].itemHash,
         bucketHash: JSON.parse(equipedItems)[i].bucketHash,
-        bucketName: bucket_info != null ? bucket_info.name : "",
+        bucketName: bucketName,
         icon: icon_name != null ? `https://www.bungie.net${icon_name.icon}` : "",
         name: icon_name != null ? icon_name.name : "name_not_found",
+        isWeapon: weaponNames.includes(bucketName)
       }
       if (bucketName === 'Kinetic Weapons') setEKineticWeapon(bucket);
       else if (bucketName === 'Energy Weapons') setEEnergyWeapon(bucket);
@@ -203,14 +201,16 @@ export const Inventory = () => {
 
       const bucket_info = await GetBucketInfo(bucketHash);
       const icon_name = await GetIconAndName(oItems[i].itemHash);
+      const bucketName = bucket_info != null ? bucket_info.name : ""
 
       const bucket: ItemBucket = {
         itemId: oItems[i].itemInstanceId,
         itemHash: oItems[i].itemHash,
         bucketHash: oItems[i].bucketHash,
-        bucketName: bucket_info != null ? bucket_info.name : "",
+        bucketName: bucketName,
         icon: icon_name != null ? `https://www.bungie.net${icon_name.icon}` : "",
         name: icon_name != null ? icon_name.name : "name_not_found",
+        isWeapon: weaponNames.includes(bucketName)
       }
       targetArray.push(bucket)
     }
@@ -244,7 +244,6 @@ export const Inventory = () => {
     myHeaders.append("X-API-Key", API_KEY);
     myHeaders.append("Authorization", `Bearer ${accessToken}`);
 
-
     return fetch(`https://www.bungie.net/Platform/Destiny2/Manifest/DestinyInventoryItemDefinition/${itemHash}/`, {
       method: 'GET',
       headers: myHeaders,
@@ -268,7 +267,6 @@ export const Inventory = () => {
     var myHeaders = new Headers();
     myHeaders.append("X-API-Key", API_KEY);
     myHeaders.append("Authorization", `Bearer ${accessToken}`);
-
 
     return fetch(`https://www.bungie.net/Platform/Destiny2/Manifest/DestinyInventoryBucketDefinition/${itemHash}/`, {
       method: 'GET',
@@ -399,7 +397,6 @@ export const Inventory = () => {
   
     return array;
   }
-  
 
   return (
     <div>
@@ -407,17 +404,24 @@ export const Inventory = () => {
 
         {
           waiting ? (
-            <div className="flex center inventory-full">Please Wait</div>
+            <h1 className="flex center inventory-full">Please Wait...</h1>
           ) : (
             <>
               <div className="flex center inventory-full">
                 <div className="all-items center">
                   {
                     e_All.map((item) => (
-                      <div title={item.name} key={item.bucketHash} className="item">
-                        <img src={ item.icon } alt={ item.icon } className="images" />
-                        {item.name}
-                      </div>
+                      item.isWeapon ? (
+                        <div title={item.name} key={item.bucketHash} className="weapons">
+                          <img src={ item.icon } alt={ item.icon } className="images" />
+                          {item.name}
+                        </div>
+                      ) : (
+                        <div title={item.name} key={item.bucketHash} className="item">
+                          <img src={ item.icon } alt={ item.icon } className="images" />
+                          {item.name}
+                        </div>
+                      )
                     ))
                   }
                 </div>
@@ -425,7 +429,7 @@ export const Inventory = () => {
 
               <div className="center">
                 <button onClick={() => doShuffle()} className="center outline">
-                  <h3 className="center randomize-button">Randomize Loadout</h3>
+                  <h3 className="center">Randomize Loadout</h3>
                 </button>
               </div>
             </>
