@@ -154,7 +154,6 @@ button:focus-visible {
 
 .inventory-full {
   padding-top: 5%;
-  /* padding-bottom: 15%; */
 }
 
 .images {
@@ -197,6 +196,29 @@ button:focus-visible {
   border-radius: 10px;
   border-width: 3px;
   padding: 3px;
-  color: #747bff;
+  color: #8289fe;
   background-color: #612665;
+}
+
+.character {
+  color: #747bff;
+  font-weight: bold;
+  font-size: larger;
+}
+
+.list-item {
+  border-color: #aa72bc;
+  border-style: solid;
+  border-radius: 2px;
+  border-width: 2px;
+  padding: 3px;
+  margin: 10px;
+  color: #d38deb;
+  background-color: #612665;
+  font-size: larger;
+}
+
+.list-item:hover {
+  color: #d7adeb;
+  cursor:pointer;
 }

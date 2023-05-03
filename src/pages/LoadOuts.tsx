@@ -91,15 +91,15 @@ export const LoadOuts = () => {
       <span className="nav-link"><Link to={`../inventory`} className="outline"> Return to Inventory</Link></span>
       {
         waiting ? (
-          <div className="flex center inventory-full">Please Wait</div>
+          <div className="flex center inventory-full">Please Wait...</div>
         ) : (
           <>
             <li className="list loadouts">
               {
                 loadouts?.map((loadout) => (
                   <ul>
-                    <span onClick={() => useLoadout(loadout)}>{loadout.date.toLocaleString()}</span>
-                    <button onClick={() => deleteLoadout(loadout)}className="outline">Delete</button>
+                    <span className="list-item" onClick={() => useLoadout(loadout)}>{loadout.date.toLocaleString()}</span>
+                    <button onClick={() => deleteLoadout(loadout)} className="outline">Delete</button>
                   </ul>
                 ))
               }

@@ -434,9 +434,9 @@ export const Inventory = () => {
   return (
     <div>
       <span className="nav-link"><Link to={`../loadouts/character/${!!characterIds ? characterIds[characterIndex] : 0}/membershipType/${!!profiles ? JSON.parse(profiles)[profileIndex].membershipType : "unknown"}`} className="outline"> To Previous Loadouts</Link></span>
-      <div>
-        Character: 
-        <select name="character" onChange={(e) => {
+      <div className="character">
+        Character:&nbsp;&nbsp;
+        <select className="outline" name="character" onChange={(e) => {
           setCharacterIndex(characterIds.indexOf(e.target.value));
           setNeedsRefresh(true);
         }}>
