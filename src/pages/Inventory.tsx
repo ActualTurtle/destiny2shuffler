@@ -293,54 +293,47 @@ export const Inventory = () => {
   function doShuffle()
   {
     const itemsToEquip: ItemBucket[]  = [];
-    if (oKineticWeapons.length > 0){
-      oKineticWeapons.push(eKineticWeapon!);
-      itemsToEquip.push( shuffle(oKineticWeapons).pop()!);
-      setEKineticWeapon(itemsToEquip[itemsToEquip.length-1]);
-      setOKineticWeapons(oKineticWeapons);
-    } 
-    if (oEnergyWeapons.length > 0){
-      oEnergyWeapons.push(eEnergyWeapon!);
-      itemsToEquip.push( shuffle(oEnergyWeapons).pop()!);
-      setEEnergyWeapon(itemsToEquip[itemsToEquip.length-1]);
-      setOEnergyWeapons(oEnergyWeapons);
-    } 
-    if (oPowerWeapons.length > 0){
-      oPowerWeapons.push(ePowerWeapon!);
-      itemsToEquip.push( shuffle(oPowerWeapons).pop()!);
-      setEPowerWeapon(itemsToEquip[itemsToEquip.length-1]);
-      setOPowerWeapons(oPowerWeapons);
-    } 
-    if (oHelmets.length > 0){
-      oHelmets.push(eHelmet!);
-      itemsToEquip.push( shuffle(oHelmets).pop()!);
-      setEHelmet(itemsToEquip[itemsToEquip.length-1]);
-      setOHelmets(oHelmets);
-    } 
-    if (oGauntlets.length > 0){
-      oGauntlets.push(eGauntlets!);
-      itemsToEquip.push( shuffle(oGauntlets).pop()!);
-      setEGauntlets(itemsToEquip[itemsToEquip.length-1]);
-      setOGauntlets(oGauntlets);      
-    } 
-    if (oChestArmor.length > 0){
-      oChestArmor.push(eChestArmor!);
-      itemsToEquip.push( shuffle(oChestArmor).pop()!);
-      setEChestArmor(itemsToEquip[itemsToEquip.length-1]);
-      setOChestArmor(oChestArmor);      
-    } 
-    if (oLegArmor.length > 0){
-      oLegArmor.push(eLegArmor!);
-      itemsToEquip.push( shuffle(oLegArmor).pop()!);
-      setELegArmor(itemsToEquip[itemsToEquip.length-1]);
-      setOLegArmor(oLegArmor);      
-    } 
-    if (oClassArmor.length > 0){
-      oClassArmor.push(eClassArmor!);
-      itemsToEquip.push( shuffle(oClassArmor).pop()!);
-      setEClassArmor(itemsToEquip[itemsToEquip.length-1]);
-      setOClassArmor(oClassArmor);      
-    } 
+  
+    oKineticWeapons.push(eKineticWeapon!);
+    itemsToEquip.push( shuffle(oKineticWeapons).pop()!);
+    setEKineticWeapon(itemsToEquip[itemsToEquip.length-1]);
+    setOKineticWeapons(oKineticWeapons);
+
+    oEnergyWeapons.push(eEnergyWeapon!);
+    itemsToEquip.push( shuffle(oEnergyWeapons).pop()!);
+    setEEnergyWeapon(itemsToEquip[itemsToEquip.length-1]);
+    setOEnergyWeapons(oEnergyWeapons);
+ 
+    oPowerWeapons.push(ePowerWeapon!);
+    itemsToEquip.push( shuffle(oPowerWeapons).pop()!);
+    setEPowerWeapon(itemsToEquip[itemsToEquip.length-1]);
+    setOPowerWeapons(oPowerWeapons);
+ 
+    oHelmets.push(eHelmet!);
+    itemsToEquip.push( shuffle(oHelmets).pop()!);
+    setEHelmet(itemsToEquip[itemsToEquip.length-1]);
+    setOHelmets(oHelmets);
+
+    oGauntlets.push(eGauntlets!);
+    itemsToEquip.push( shuffle(oGauntlets).pop()!);
+    setEGauntlets(itemsToEquip[itemsToEquip.length-1]);
+    setOGauntlets(oGauntlets);      
+
+    oChestArmor.push(eChestArmor!);
+    itemsToEquip.push( shuffle(oChestArmor).pop()!);
+    setEChestArmor(itemsToEquip[itemsToEquip.length-1]);
+    setOChestArmor(oChestArmor);      
+  
+    oLegArmor.push(eLegArmor!);
+    itemsToEquip.push( shuffle(oLegArmor).pop()!);
+    setELegArmor(itemsToEquip[itemsToEquip.length-1]);
+    setOLegArmor(oLegArmor);      
+ 
+    oClassArmor.push(eClassArmor!);
+    itemsToEquip.push( shuffle(oClassArmor).pop()!);
+    setEClassArmor(itemsToEquip[itemsToEquip.length-1]);
+    setOClassArmor(oClassArmor);      
+    
     setE_All(itemsToEquip);
 
     const items_ids = itemsToEquip.map((item) => item.itemId);
