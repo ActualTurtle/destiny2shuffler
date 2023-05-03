@@ -25,22 +25,25 @@ interface ItemBucket {
   itemId: string,
   itemHash: number,
   name: string,
-  icon: string
+  icon: string,
+  isWeapon: boolean
 }
-
 
 export const Inventory = () => {
 
+  // Mainly json data store
   const [accessToken, setAuthToken] = useState("");
   const [membershipId, setMembershipId] = useState(0);
   const [profiles, setProfiles] = useState(""); // Json String
   const [profileIndex, setProfileIndex] = useState(0);
-  const [characterIds, setCharacterIds] = useState("");  // Json String
+  const [characterIds, setCharacterIds] = useState<string[]>([]);  // Json String
   const [characterIndex, setCharacterIndex] = useState(0);
   const [equipedItems, setEquipedItems] = useState(""); // Json String
   const [otherItems, setOtherItems] = useState(""); // Json String
   const [waiting, setWaiting] = useState(true);
+  const [needsRefresh, setNeedsRefresh] = useState(false);
 
+  // Equiped ITEMS, as ItemBucket
   const [eKineticWeapon, setEKineticWeapon] = useState<ItemBucket>();
   const [eEnergyWeapon, setEEnergyWeapon] = useState<ItemBucket>();
   const [ePowerWeapon, setEPowerWeapon] = useState<ItemBucket>();
@@ -50,8 +53,10 @@ export const Inventory = () => {
   const [eLegArmor, setELegArmor] = useState<ItemBucket>();
   const [eClassArmor, setEClassArmor] = useState<ItemBucket>();
 
+  // List of all equiped items
   const [e_All, setE_All] = useState<ItemBucket[]>([]); 
 
+  // Lists of all other equipable items
   const [oKineticWeapons, setOKineticWeapons] = useState<ItemBucket[]>([]); 
   const [oEnergyWeapons, setOEnergyWeapons] = useState<ItemBucket[]>([]); 
   const [oPowerWeapons, setOPowerWeapons] = useState<ItemBucket[]>([]); 
@@ -59,12 +64,11 @@ export const Inventory = () => {
   const [oGauntlets, setOGauntlets] = useState<ItemBucket[]>([]); 
   const [oChestArmor, setOChestArmor] = useState<ItemBucket[]>([]); 
   const [oLegArmor, setOLegArmor] = useState<ItemBucket[]>([]); 
-  const [oClassArmor, setOClassArmor] = useState<ItemBucket[]>([]); 
+  const [oClassArmor, setOClassArmor] = useState<ItemBucket[]>([]);
 
+  const weaponNames = ['Kinetic Weapons', 'Energy Weapons', 'Power Weapons']; // To check if an item is a weapon
 
-  useEffect(() => {
-    
-    
+  useEffect(() => {    
     if (accessToken === ""){
       if (localStorage.getItem("tokens_v2")){
         console.log(localStorage.getItem("tokens_v2"));
@@ -79,25 +83,31 @@ export const Inventory = () => {
         GetUserProfiles();
       }
       if (profiles !== "") {
-        if (characterIds === "" || equipedItems === "" || otherItems === "") {
+        if (equipedItems === "" || otherItems === "") {
           GetItems();
         }
-        if (characterIds !== "" && equipedItems !== "" && otherItems !== "" &&
+        if (equipedItems !== "" && otherItems !== "" &&
             eKineticWeapon === undefined) {
           setupBuckets();
         }
       }
     }
+    if (needsRefresh)
+    {
+      GetItems();
+      setupBuckets();
+      setNeedsRefresh(false);
+    }
+
     setProfileIndex(0); // Later UI should be used to select a profile
     setCharacterIndex(0); // later UI should be used to select a character from available character, and update index
-  }, [accessToken, membershipId, profiles, equipedItems]);
+  }, [accessToken, membershipId, profiles, equipedItems, needsRefresh]);
 
   /**
    * Sets the profiles of the user
    */
   function GetUserProfiles()
   {
-    
     var myHeaders = new Headers();
     myHeaders.append("X-API-Key", API_KEY);
     myHeaders.append("Authorization", `Bearer ${accessToken}`);
@@ -109,7 +119,8 @@ export const Inventory = () => {
     })
       .then(response => response.json())
       .then(result => {
-        // console.log(result);
+        console.log("PROFILES")
+        console.log(result);
         setProfiles(JSON.stringify(result.Response.profiles))
       })
       .catch(error => console.log('error', error));
@@ -120,7 +131,6 @@ export const Inventory = () => {
    */
   function GetItems()
   {
-    
     var myHeaders = new Headers();
     myHeaders.append("X-API-Key", API_KEY);
     myHeaders.append("Authorization", `Bearer ${accessToken}`);
@@ -135,13 +145,16 @@ export const Inventory = () => {
     })
       .then(response => response.json())
       .then(result => {
-        // console.log(result);
+        console.log("GET ITEMS")
+        console.log(result);
         var charIds = result.Response.profile.data.characterIds as Array<string>;
-        setCharacterIds(JSON.stringify(charIds));
+        setCharacterIds(charIds);
         
+        let characterEquipment = result.Response.characterEquipment.data;
+        let characterInventories = result.Response.characterInventories.data;
         // console.log(result.Response.characterEquipment.data[charIds[characterIndex]])
-        setEquipedItems(JSON.stringify(result.Response.characterEquipment.data[charIds[characterIndex]].items))
-        setOtherItems(JSON.stringify(result.Response.characterInventories.data[charIds[characterIndex]].items))
+        setEquipedItems(JSON.stringify(characterEquipment[charIds[characterIndex]].items))
+        setOtherItems(JSON.stringify(characterInventories[charIds[characterIndex]].items))
       })
       .catch(error => console.log('error', error));
   }
@@ -161,9 +174,10 @@ export const Inventory = () => {
         itemId: JSON.parse(equipedItems)[i].itemInstanceId,
         itemHash: JSON.parse(equipedItems)[i].itemHash,
         bucketHash: JSON.parse(equipedItems)[i].bucketHash,
-        bucketName: bucket_info != null ? bucket_info.name : "",
+        bucketName: bucketName,
         icon: icon_name != null ? `https://www.bungie.net${icon_name.icon}` : "",
         name: icon_name != null ? icon_name.name : "name_not_found",
+        isWeapon: weaponNames.includes(bucketName)
       }
       if (bucketName === 'Kinetic Weapons') setEKineticWeapon(bucket);
       else if (bucketName === 'Energy Weapons') setEEnergyWeapon(bucket);
@@ -208,14 +222,16 @@ export const Inventory = () => {
 
       const bucket_info = await GetBucketInfo(bucketHash);
       const icon_name = await GetIconAndName(oItems[i].itemHash);
+      const bucketName = bucket_info != null ? bucket_info.name : ""
 
       const bucket: ItemBucket = {
         itemId: oItems[i].itemInstanceId,
         itemHash: oItems[i].itemHash,
         bucketHash: oItems[i].bucketHash,
-        bucketName: bucket_info != null ? bucket_info.name : "",
+        bucketName: bucketName,
         icon: icon_name != null ? `https://www.bungie.net${icon_name.icon}` : "",
         name: icon_name != null ? icon_name.name : "name_not_found",
+        isWeapon: weaponNames.includes(bucketName)
       }
       targetArray.push(bucket)
     }
@@ -249,7 +265,6 @@ export const Inventory = () => {
     myHeaders.append("X-API-Key", API_KEY);
     myHeaders.append("Authorization", `Bearer ${accessToken}`);
 
-
     return fetch(`https://www.bungie.net/Platform/Destiny2/Manifest/DestinyInventoryItemDefinition/${itemHash}/`, {
       method: 'GET',
       headers: myHeaders,
@@ -273,7 +288,6 @@ export const Inventory = () => {
     var myHeaders = new Headers();
     myHeaders.append("X-API-Key", API_KEY);
     myHeaders.append("Authorization", `Bearer ${accessToken}`);
-
 
     return fetch(`https://www.bungie.net/Platform/Destiny2/Manifest/DestinyInventoryBucketDefinition/${itemHash}/`, {
       method: 'GET',
@@ -369,7 +383,7 @@ export const Inventory = () => {
 
     saveLoadout(
       items_ids, 
-      JSON.parse(characterIds)[characterIndex],
+      characterIds[characterIndex],
       JSON.parse(profiles)[profileIndex].membershipType
     );
 
@@ -379,7 +393,7 @@ export const Inventory = () => {
 
     const body = JSON.stringify({
       "itemIds":  items_ids,
-      "characterId": JSON.parse(characterIds)[characterIndex],
+      "characterId": characterIds[characterIndex],
       "membershipType": JSON.parse(profiles)[profileIndex].membershipType
     })
     console.log(JSON.parse(body));
@@ -416,25 +430,44 @@ export const Inventory = () => {
   
     return array;
   }
-  
 
   return (
     <div>
-        <span className="nav-link"><Link to={`../loadouts/character/${!!characterIds ? JSON.parse(characterIds)[characterIndex] : 0}/membershipType/${!!profiles ? JSON.parse(profiles)[profileIndex].membershipType : "unknown"}`} className="outline"> To Previous Loadouts</Link></span>
+      <span className="nav-link"><Link to={`../loadouts/character/${!!characterIds ? characterIds[characterIndex] : 0}/membershipType/${!!profiles ? JSON.parse(profiles)[profileIndex].membershipType : "unknown"}`} className="outline"> To Previous Loadouts</Link></span>
+      <div>
+        Character: 
+        <select name="character" onChange={(e) => {
+          setCharacterIndex(characterIds.indexOf(e.target.value));
+          setNeedsRefresh(true);
+        }}>
+          {
+            characterIds.map((id) => (
+              <option value={id} key={characterIds.indexOf(id)}>{id}</option>
+            ))
+          }
+        </select>
+      </div>
 
         {
           waiting ? (
-            <div className="flex center inventory-full">Please Wait</div>
+            <h1 className="flex center inventory-full">Please Wait...</h1>
           ) : (
             <>
               <div className="flex center inventory-full">
                 <div className="all-items center">
                   {
                     e_All.map((item) => (
-                      <div title={item.name} key={item.bucketHash} className="item">
-                        <img src={ item.icon } alt={ item.icon } className="images" />
-                        {item.name}
-                      </div>
+                      item.isWeapon ? (
+                        <div title={item.name} key={item.bucketHash} className="weapons">
+                          <img src={ item.icon } alt={ item.icon } className="images" />
+                          {item.name}
+                        </div>
+                      ) : (
+                        <div title={item.name} key={item.bucketHash} className="item">
+                          <img src={ item.icon } alt={ item.icon } className="images" />
+                          {item.name}
+                        </div>
+                      )
                     ))
                   }
                 </div>
@@ -442,7 +475,7 @@ export const Inventory = () => {
 
               <div className="center">
                 <button onClick={() => doShuffle()} className="center outline">
-                  <h3 className="center randomize-button">Randomize Loadout</h3>
+                  <h3 className="center">Randomize Loadout</h3>
                 </button>
               </div>
             </>
