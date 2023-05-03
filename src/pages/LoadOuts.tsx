@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { Loadout } from "../dto/firestore"
-import { useNavigate, useParams } from "react-router-dom"
+import { Link, useNavigate, useParams } from "react-router-dom"
 import { getLoadouts, removeLoadout } from "../lib/loadouts"
 import { API_KEY } from "../lib/api"
 
@@ -88,6 +88,7 @@ export const LoadOuts = () => {
   return (
     <div>
       <h1>Previous Loadouts</h1>
+      <span className="nav-link"><Link to={`../inventory`} className="outline"> Return to Inventory</Link></span>
       {
         waiting ? (
           <div className="flex center inventory-full">Please Wait</div>
