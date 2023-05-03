@@ -67,7 +67,8 @@ export const Inventory = () => {
         if (characterIds === "" || equipedItems === "" || otherItems === "") {
           GetItems();
         }
-        if (characterIds !== "" && equipedItems !== "" && otherItems !== "") {
+        if (characterIds !== "" && equipedItems !== "" && otherItems !== "" &&
+            itemBuckets.length === 0) {
           setupBuckets();
         }
       }
@@ -270,6 +271,47 @@ export const Inventory = () => {
       .catch(error => console.log('error', error));
   }
 
+  /**
+   * EQUIPS RANDOM ITEMS FROM OTHER ITEMS
+   */
+  function doShuffle()
+  {
+    const itemsToEquip: ItemBucket[]  = [];
+    itemsToEquip.push( oKineticWeapons[Math.floor(Math.random()*oKineticWeapons.length)]);
+    itemsToEquip.push( oEnergyWeapons[Math.floor(Math.random()*oEnergyWeapons.length)]);
+    itemsToEquip.push( oPowerWeapons[Math.floor(Math.random()*oPowerWeapons.length)]);
+    itemsToEquip.push( oHelmets[Math.floor(Math.random()*oHelmets.length)]);
+    itemsToEquip.push( oGauntlets[Math.floor(Math.random()*oGauntlets.length)]);
+    itemsToEquip.push( oChestArmor[Math.floor(Math.random()*oChestArmor.length)]);
+    itemsToEquip.push( oLegArmor[Math.floor(Math.random()*oLegArmor.length)]);
+    itemsToEquip.push( oClassArmor[Math.floor(Math.random()*oClassArmor.length)]);
+
+    const items_ids = itemsToEquip.map((item) => item.itemId);
+    console.log(items_ids);
+    var myHeaders = new Headers();
+    myHeaders.append("X-API-Key", API_KEY);
+    myHeaders.append("Authorization", `Bearer ${accessToken}`);
+
+    const body = JSON.stringify({
+      "itemIds":  items_ids,
+      "characterId": JSON.parse(characterIds)[characterIndex],
+      "membershipType": JSON.parse(profiles)[profileIndex].membershipType
+    })
+    console.log(JSON.parse(body));
+
+    fetch("https://www.bungie.net/Platform/Destiny2/Actions/Items/EquipItems/", {
+      method: 'POST',
+      headers: myHeaders,
+      body: body,
+      redirect: 'follow'
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+      })
+      .catch(error => console.log('error', error));
+  }
+
   return (
     <div>
         <span className="nav-link"><Link to={`../loadouts`} className="outline"> To Previous Loadouts</Link></span>
@@ -293,7 +335,7 @@ export const Inventory = () => {
               </div>
 
               <div className="center">
-                <button onClick={() => GetItems()} className="center outline">
+                <button onClick={() => doShuffle()} className="center outline">
                   <h3 className="center randomize-button">Randomize Loadout</h3>
                 </button>
               </div>
