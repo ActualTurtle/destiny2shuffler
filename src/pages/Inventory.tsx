@@ -293,46 +293,64 @@ export const Inventory = () => {
   function doShuffle()
   {
     const itemsToEquip: ItemBucket[]  = [];
-  
-    oKineticWeapons.push(eKineticWeapon!);
-    itemsToEquip.push( shuffle(oKineticWeapons).pop()!);
-    setEKineticWeapon(itemsToEquip[itemsToEquip.length-1]);
-    setOKineticWeapons(oKineticWeapons);
 
-    oEnergyWeapons.push(eEnergyWeapon!);
-    itemsToEquip.push( shuffle(oEnergyWeapons).pop()!);
-    setEEnergyWeapon(itemsToEquip[itemsToEquip.length-1]);
-    setOEnergyWeapons(oEnergyWeapons);
- 
-    oPowerWeapons.push(ePowerWeapon!);
-    itemsToEquip.push( shuffle(oPowerWeapons).pop()!);
-    setEPowerWeapon(itemsToEquip[itemsToEquip.length-1]);
-    setOPowerWeapons(oPowerWeapons);
- 
-    oHelmets.push(eHelmet!);
-    itemsToEquip.push( shuffle(oHelmets).pop()!);
-    setEHelmet(itemsToEquip[itemsToEquip.length-1]);
-    setOHelmets(oHelmets);
+    if (eKineticWeapon !== undefined){
 
-    oGauntlets.push(eGauntlets!);
-    itemsToEquip.push( shuffle(oGauntlets).pop()!);
-    setEGauntlets(itemsToEquip[itemsToEquip.length-1]);
-    setOGauntlets(oGauntlets);      
+      oKineticWeapons.push(eKineticWeapon!);
+      itemsToEquip.push( shuffle(oKineticWeapons).pop()!);
+      setEKineticWeapon(itemsToEquip[itemsToEquip.length-1]);
+      setOKineticWeapons(oKineticWeapons);
+    }
+    if (eEnergyWeapon !== undefined){
 
-    oChestArmor.push(eChestArmor!);
-    itemsToEquip.push( shuffle(oChestArmor).pop()!);
-    setEChestArmor(itemsToEquip[itemsToEquip.length-1]);
-    setOChestArmor(oChestArmor);      
-  
-    oLegArmor.push(eLegArmor!);
-    itemsToEquip.push( shuffle(oLegArmor).pop()!);
-    setELegArmor(itemsToEquip[itemsToEquip.length-1]);
-    setOLegArmor(oLegArmor);      
- 
-    oClassArmor.push(eClassArmor!);
-    itemsToEquip.push( shuffle(oClassArmor).pop()!);
-    setEClassArmor(itemsToEquip[itemsToEquip.length-1]);
-    setOClassArmor(oClassArmor);      
+      oEnergyWeapons.push(eEnergyWeapon!);
+      itemsToEquip.push( shuffle(oEnergyWeapons).pop()!);
+      setEEnergyWeapon(itemsToEquip[itemsToEquip.length-1]);
+      setOEnergyWeapons(oEnergyWeapons);
+    }
+    if (ePowerWeapon !== undefined){
+
+      oPowerWeapons.push(ePowerWeapon!);
+      itemsToEquip.push( shuffle(oPowerWeapons).pop()!);
+      setEPowerWeapon(itemsToEquip[itemsToEquip.length-1]);
+      setOPowerWeapons(oPowerWeapons);
+    }
+
+    if (eHelmet !== undefined){
+
+      oHelmets.push(eHelmet!);
+      itemsToEquip.push( shuffle(oHelmets).pop()!);
+      setEHelmet(itemsToEquip[itemsToEquip.length-1]);
+      setOHelmets(oHelmets);
+    }
+    if (eGauntlets !== undefined){
+
+      oGauntlets.push(eGauntlets!);
+      itemsToEquip.push( shuffle(oGauntlets).pop()!);
+      setEGauntlets(itemsToEquip[itemsToEquip.length-1]);
+      setOGauntlets(oGauntlets);      
+    }
+    if (eChestArmor !== undefined){
+
+      oChestArmor.push(eChestArmor!);
+      itemsToEquip.push( shuffle(oChestArmor).pop()!);
+      setEChestArmor(itemsToEquip[itemsToEquip.length-1]);
+      setOChestArmor(oChestArmor);      
+    }
+    if (eLegArmor !== undefined){
+
+      oLegArmor.push(eLegArmor!);
+      itemsToEquip.push( shuffle(oLegArmor).pop()!);
+      setELegArmor(itemsToEquip[itemsToEquip.length-1]);
+      setOLegArmor(oLegArmor);      
+    }
+    if (eClassArmor !== undefined){
+
+      oClassArmor.push(eClassArmor!);
+      itemsToEquip.push( shuffle(oClassArmor).pop()!);
+      setEClassArmor(itemsToEquip[itemsToEquip.length-1]);
+      setOClassArmor(oClassArmor);      
+    }
     
     setE_All(itemsToEquip);
 
