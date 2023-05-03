@@ -4,7 +4,7 @@ import { db } from "../lib/firebase";
 
 const COLLECTION_NAME = "loadouts"
 
-export async function saveLoadout(itemIds: String[], characterId: String, membershipType: String) {
+export async function saveLoadout(itemIds: String[], characterId: String, membershipType: Number) {
   let data: Loadout = {
     date: new Date(),
     itemIds,
@@ -16,21 +16,23 @@ export async function saveLoadout(itemIds: String[], characterId: String, member
   await addDoc(collection(db, COLLECTION_NAME), data);
 }
 
-export async function getLoadouts(characterId: String, membershipType: String) {
-  
+export async function getLoadouts(characterId: String, membershipType: Number) {
+  console.log(characterId);
+  console.log(membershipType);
   const q = query(
     collection(db, COLLECTION_NAME), 
-    and(
+    // and(
       where("characterId", "==", characterId), 
-      where("membershipType", "==", membershipType)
-    ), 
-    orderBy("date"));
+      where("membershipType", "==", membershipType),
+    // ), 
+   );
 
   const querySnapshot = (await getDocs(q));
-
+  
   let loadouts: Loadout[] = [];
 
   querySnapshot.forEach((doc) => {
+    console.log("here");
     let data = doc.data();
     
     loadouts.push({
@@ -47,12 +49,12 @@ export async function getLoadouts(characterId: String, membershipType: String) {
 export async function removeLoadout(loadout: Loadout) {
   const q = query(
     collection(db, COLLECTION_NAME), 
-    and(
+    // and(
       where("characterId", "==", loadout.characterId),
       where("membershipType", "==", loadout.membershipType),
       where("date", "==", loadout.date),
       // ...loadout.itemIds.map((id) => where("itemIds", "array-contains", id)),
-    ),
+    // ),
   )
 
   const querySnapshot = (await getDocs(q));

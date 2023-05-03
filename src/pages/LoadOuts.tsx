@@ -44,16 +44,19 @@ export const LoadOuts = () => {
   }, []);
 
   function loadLoadouts() {
+    setWaiting(true);
     getLoadouts(
       characterId!,
-      membershipType!,
+      parseInt(membershipType!),
     ).then((response => {
+      console.log(response);
       setLoadouts(response);
       setWaiting(false);
     }))
   }
 
   function useLoadout(loadout: Loadout) {
+    console.log("I happened");
     var myHeaders = new Headers();
     myHeaders.append("X-API-Key", API_KEY);
     myHeaders.append("Authorization", `Bearer ${accessToken}`);
@@ -77,6 +80,11 @@ export const LoadOuts = () => {
       .catch(error => console.log('error', error));
   }
 
+  async function deleteLoadout(loadout: Loadout) {
+    await removeLoadout(loadout);
+    loadLoadouts();
+  }
+
   return (
     <div>
       <h1>Previous Loadouts</h1>
@@ -90,7 +98,7 @@ export const LoadOuts = () => {
                 loadouts?.map((loadout) => (
                   <ul>
                     <span onClick={() => useLoadout(loadout)}>{loadout.date.toLocaleString()}</span>
-                    <button onClick={() => removeLoadout(loadout)}className="outline">Delete</button>
+                    <button onClick={() => deleteLoadout(loadout)}className="outline">Delete</button>
                   </ul>
                 ))
               }
