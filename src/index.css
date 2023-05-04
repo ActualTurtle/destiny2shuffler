@@ -250,8 +250,9 @@ li.loadouts {
   font-size: larger;
 }
 
-.list-item:hover {
-  color: #d7adeb;
+.loadout:hover {
+  background-color: #a241d0;
+  /* color: black; */
   cursor:pointer;
 }
 
