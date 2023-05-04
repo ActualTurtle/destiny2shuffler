@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom";
 import { client_id } from "../lib/api";
 
@@ -20,6 +20,11 @@ interface tokens {
 export const Home = () => {
   const navigate = useNavigate();
 
+  const [locationLoaded, setLocationLoaded] = useState(false);
+  const [wantLocation, setWantLocation] = useState(false);
+  const [lat, setLat] = useState(0);
+  const [long, setLong] = useState(0);
+
   useEffect(() => {
     const url = window.location.href.split("/");
     let code = "";
@@ -35,6 +40,21 @@ export const Home = () => {
       sendAuthCode(code);
     }
   }, []);
+
+  // Geolocation Code
+  useEffect(() => {
+    if (wantLocation) {
+      navigator.geolocation.getCurrentPosition((location) => {
+        setLocationLoaded(true);
+        setLat(location.coords.latitude);
+        setLong(location.coords.longitude);
+      }, (err) => {
+        console.log(err);
+      }, {
+        enableHighAccuracy: false
+      });
+    }
+  }, [wantLocation]);
 
   function sendAuthCode(code: string) {
     // Send POST request to https://www.bungie.net/Platform/App/OAuth/Token/
@@ -112,6 +132,16 @@ export const Home = () => {
             {/* I don't actually think we need the signin page after all */}
             {/* <span><Link to={`./signin`} className="login-links">SignIn</Link></span> */}
             <span><Link to={`https://www.bungie.net/en/OAuth/Authorize?client_id=${client_id}&response_type=code`} className="login-links">Sign In With Bungie</Link></span>
+
+            <div className="location">
+              {
+                wantLocation&&lat!==0&&long!==0 ? (
+                  <p className="location-text">I am at: {lat}, {long}</p>
+                ) : (
+                  <button onClick={() => setWantLocation(true)}>Where am I?</button>
+                )
+              }
+            </div>
         </div>
         
     </>
