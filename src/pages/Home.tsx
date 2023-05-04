@@ -11,16 +11,10 @@ interface tokens {
   refreshTokenExpiryDate: number,
   membershipId: number,
 };
-/**
- * TODO: Testing this is hard since after clicking on "SignIn" you will be redirected to the 
- * github page and not the localhost page meaning you need to copy the code at the end of the 
- * link and just paste it onto the end of the localhost url
- * e.g. http://localhost:5173/destiny2shuffler/?code=540a6fe5a7619aac3cecd331408170fa
- */
+
 export const Home = () => {
   const navigate = useNavigate();
 
-  const [locationLoaded, setLocationLoaded] = useState(false);
   const [wantLocation, setWantLocation] = useState(false);
   const [lat, setLat] = useState(0);
   const [long, setLong] = useState(0);
@@ -45,7 +39,6 @@ export const Home = () => {
   useEffect(() => {
     if (wantLocation) {
       navigator.geolocation.getCurrentPosition((location) => {
-        setLocationLoaded(true);
         setLat(location.coords.latitude);
         setLong(location.coords.longitude);
       }, (err) => {
@@ -115,11 +108,6 @@ export const Home = () => {
         }
       })
       .catch(error => console.log('error', error));
-
-    // If the request returns a status 200
-    // accessToken will be in the res body after sending the POST request
-    // Not yet sure if the other values have any use
-    // getCurrentUser(accessToken);
   }
 
 
