@@ -108,7 +108,7 @@ export const LoadOuts = () => {
                           {item.name}
                         </div>
                       ))}
-                    <button onClick={() => deleteLoadout(loadout)} className="outline delete-button">
+                    <button onClick={async (e) => { e.stopPropagation(); await deleteLoadout(loadout);}} className="outline delete-button">
                       X
                       {/* font awesome is a pain. */}
                     </button>
