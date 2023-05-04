@@ -222,3 +222,12 @@ button:focus-visible {
   color: #d7adeb;
   cursor:pointer;
 }
+
+.location {
+  margin-top: 15%;
+}
+
+.location-text {
+  color: #747bff;
+  font-size: larger;
+}
