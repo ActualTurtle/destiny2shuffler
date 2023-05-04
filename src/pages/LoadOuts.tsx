@@ -3,6 +3,8 @@ import { Loadout } from "../dto/firestore"
 import { Link, useNavigate, useParams } from "react-router-dom"
 import { getLoadouts, removeLoadout } from "../lib/loadouts"
 import { API_KEY } from "../lib/api"
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { icon } from '@fortawesome/fontawesome-svg-core/import.macro'
 
 interface tokens {
   tokenType: string,
@@ -98,15 +100,17 @@ export const LoadOuts = () => {
               {
                 loadouts?.map((loadout) => (
                   <ul>
-                    <span className="list-item" onClick={() => useLoadout(loadout)}>
+                    <div className="loadout" onClick={() => useLoadout(loadout)}>
                       {loadout.items.map((item) => (
                         <div title={item.name as string} className="item small">
                           <img src={ item.icon as string} alt={ item.icon as string} className="images" />
                           {item.name}
                         </div>
                       ))}
-                    </span>
-                    <button onClick={() => deleteLoadout(loadout)} className="outline">Delete</button>
+                    <button onClick={() => deleteLoadout(loadout)} className="outline delete-button">
+                      <FontAwesomeIcon icon={icon({name: "trash", style: "solid", family: "classic"})}/>
+                    </button>
+                    </div>
                   </ul>
                 ))
               }
