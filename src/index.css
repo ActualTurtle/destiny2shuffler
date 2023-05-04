@@ -161,6 +161,11 @@ button:focus-visible {
   height: 128px;
 }
 
+.images.small {
+  width: 64px;
+  height: 64px;
+}
+
 .item {
   display: flex;
   flex-direction: column;
@@ -168,6 +173,15 @@ button:focus-visible {
   align-items: center;
   width: 20%;
   padding-bottom: 35px;
+}
+
+.item.small {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 10%;
+  padding-bottom: 15px;
 }
 
 .weapons {

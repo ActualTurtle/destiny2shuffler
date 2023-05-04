@@ -62,7 +62,7 @@ export const LoadOuts = () => {
     myHeaders.append("Authorization", `Bearer ${accessToken}`);
 
     const body = JSON.stringify({
-      "itemIds": loadout.itemIds,
+      "itemIds": loadout.items.map((item) => item.id),
       "characterId": loadout.characterId,
       "membershipType": loadout.membershipType,
     });
@@ -98,7 +98,14 @@ export const LoadOuts = () => {
               {
                 loadouts?.map((loadout) => (
                   <ul>
-                    <span className="list-item" onClick={() => useLoadout(loadout)}>{loadout.date.toLocaleString()}</span>
+                    <span className="list-item" onClick={() => useLoadout(loadout)}>
+                      {loadout.items.map((item) => (
+                        <div title={item.name as string} className="item small">
+                          <img src={ item.icon as string} alt={ item.icon as string} className="images" />
+                          {item.name}
+                        </div>
+                      ))}
+                    </span>
                     <button onClick={() => deleteLoadout(loadout)} className="outline">Delete</button>
                   </ul>
                 ))
