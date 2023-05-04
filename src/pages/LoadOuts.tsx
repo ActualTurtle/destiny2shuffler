@@ -3,8 +3,6 @@ import { Loadout } from "../dto/firestore"
 import { Link, useNavigate, useParams } from "react-router-dom"
 import { getLoadouts, removeLoadout } from "../lib/loadouts"
 import { API_KEY } from "../lib/api"
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { icon } from '@fortawesome/fontawesome-svg-core/import.macro'
 
 interface tokens {
   tokenType: string,
@@ -57,7 +55,7 @@ export const LoadOuts = () => {
     }))
   }
 
-  function useLoadout(loadout: Loadout) {
+  async function useLoadout(loadout: Loadout) {
     console.log("I happened");
     var myHeaders = new Headers();
     myHeaders.append("X-API-Key", API_KEY);
@@ -69,7 +67,7 @@ export const LoadOuts = () => {
       "membershipType": loadout.membershipType,
     });
 
-    fetch("https://www.bungie.net/Platform/Destiny2/Actions/Items/EquipItems/", {
+    await fetch("https://www.bungie.net/Platform/Destiny2/Actions/Items/EquipItems/", {
       method: 'POST',
       headers: myHeaders,
       body: body,
@@ -100,7 +98,10 @@ export const LoadOuts = () => {
               {
                 loadouts?.map((loadout) => (
                   <ul>
-                    <div className="loadout" onClick={() => useLoadout(loadout)}>
+                    <div className="loadout" onClick={async () => {
+                      await useLoadout(loadout);
+                      navigate("../inventory");
+                    }}>
                       {loadout.items.map((item) => (
                         <div title={item.name as string} className="item small">
                           <img src={ item.icon as string} alt={ item.icon as string} className="images" />
@@ -108,7 +109,8 @@ export const LoadOuts = () => {
                         </div>
                       ))}
                     <button onClick={() => deleteLoadout(loadout)} className="outline delete-button">
-                      <FontAwesomeIcon icon={icon({name: "trash", style: "solid", family: "classic"})}/>
+                      X
+                      {/* font awesome is a pain. */}
                     </button>
                     </div>
                   </ul>

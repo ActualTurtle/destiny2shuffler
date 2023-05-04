@@ -195,8 +195,7 @@ button:focus-visible {
 }
 
 .delete-button {
-  height: 100%;
-  
+  font: small-caps bold 50px/1 sans-serif;;
 }
 
 li.loadouts {
