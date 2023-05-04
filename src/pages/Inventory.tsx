@@ -1,22 +1,16 @@
 import { Link } from "react-router-dom"
 import { useEffect, useState } from "react";
 import { API_KEY } from "../lib/api";
-import { profile } from "console";
-import { Loadout } from "../dto/firestore";
-
-import { doc, setDoc } from "firebase/firestore";
 import { saveLoadout } from "../lib/loadouts";
+import { Item } from "../dto/firestore";
 
 interface tokens {
   tokenType: string,
   accessToken: string | null,
-  //accessTokenReadyDate: 0,
   accessTokenExpiryDate: number,
   refreshToken: string | null,
-  //refreshTokenReadyDate: 0,
   refreshTokenExpiryDate: number,
   membershipId: number,
-  //scope: 0
 };
 
 interface ItemBucket {
@@ -379,10 +373,16 @@ export const Inventory = () => {
     console.log(items_ids);
 
     //save items in firebase
-
+    const items: Item[] = itemsToEquip.map((item) => {
+      return {
+        id: item.itemId,
+        name: item.name,
+        icon: item.icon
+      }
+    })
 
     saveLoadout(
-      items_ids, 
+      items, 
       characterIds[characterIndex],
       JSON.parse(profiles)[profileIndex].membershipType
     );

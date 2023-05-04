@@ -1,9 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 
-// // TODO: Add SDKs for Firebase products that you want to use
-// // https://firebase.google.com/docs/web/setup#available-libraries
-
 const firebaseConfig = {
   apiKey: "AIzaSyC-Nxdzv9KzDzI5mSGaxYctQ-hRg2p-Y8E",
   authDomain: "destiny2-shuffler.firebaseapp.com",

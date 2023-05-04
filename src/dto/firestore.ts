@@ -1,6 +1,12 @@
 export interface Loadout {
   date: Date,
-  itemIds: String[],
+  items: Item[],
   characterId: String,
   membershipType: Number,
+}
+
+export interface Item {
+  id: String,
+  name: String,
+  icon: String,
 }

@@ -55,19 +55,19 @@ export const LoadOuts = () => {
     }))
   }
 
-  function useLoadout(loadout: Loadout) {
+  async function useLoadout(loadout: Loadout) {
     console.log("I happened");
     var myHeaders = new Headers();
     myHeaders.append("X-API-Key", API_KEY);
     myHeaders.append("Authorization", `Bearer ${accessToken}`);
 
     const body = JSON.stringify({
-      "itemIds": loadout.itemIds,
+      "itemIds": loadout.items.map((item) => item.id),
       "characterId": loadout.characterId,
       "membershipType": loadout.membershipType,
     });
 
-    fetch("https://www.bungie.net/Platform/Destiny2/Actions/Items/EquipItems/", {
+    await fetch("https://www.bungie.net/Platform/Destiny2/Actions/Items/EquipItems/", {
       method: 'POST',
       headers: myHeaders,
       body: body,
@@ -98,8 +98,21 @@ export const LoadOuts = () => {
               {
                 loadouts?.map((loadout) => (
                   <ul>
-                    <span className="list-item" onClick={() => useLoadout(loadout)}>{loadout.date.toLocaleString()}</span>
-                    <button onClick={() => deleteLoadout(loadout)} className="outline">Delete</button>
+                    <div className="loadout" onClick={async () => {
+                      await useLoadout(loadout);
+                      navigate("../inventory");
+                    }}>
+                      {loadout.items.map((item) => (
+                        <div title={item.name as string} className="item small">
+                          <img src={ item.icon as string} alt={ item.icon as string} className="images" />
+                          {item.name}
+                        </div>
+                      ))}
+                    <button onClick={() => deleteLoadout(loadout)} className="outline delete-button">
+                      X
+                      {/* font awesome is a pain. */}
+                    </button>
+                    </div>
                   </ul>
                 ))
               }
